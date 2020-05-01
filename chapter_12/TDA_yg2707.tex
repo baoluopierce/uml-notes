@@ -1,0 +1,267 @@
+﻿\section*{Introduction: Pipeline of TDA}
+Topological Data Analysis (TDA) applies topology and geometry to infer robust qualitative, and sometimes quantitative, information about the structure of data. The general pipline is:\\
+ \\
+1. Input: a finite set of points coming with a notion of "distance".\\
+2. Build a “continuous” shape (simplical complex or filtration) on top of the data to reflect relevant information about the structure of data.\\
+3. Extract topological or geometric information from the structures built on top of the data for information identification, visualization, interpretation. This can be done by showing relevance, stability and understanding the statistical behavior.\\
+4. Summarize new families of features and descriptors of the data.
+
+% YOUR SOLUTION GOES HERE
+
+\section{Basic concepts \& definitions}
+\theoremstyle{definition}
+\begin{definition}[\textbf{nerve}]
+Given a \emph{cover} $\mathcal{U}=(U_i)_{i\in I}$, of $\mathbb{M}$, the \textbf{nerve} of $\mathcal{U}$ is the abstract simplicial complex $C(\mathcal{U})$ with vertices $U_i$'s and 
+\begin{equation*}
+    \sigma = [U_{i0},\cdots, U_{ik}] \in C(\mathcal{U})\  iff \cap{k}{j=0} U_{i_j} \neq \emptyset
+\end{equation*}
+\end{definition}
+
+\begin{definition} [\textbf{level set} and \textbf{sublevel set}]
+A \textit{level set} of a real-valued function $f$ of $n$ real variables is a set:
+\begin{equation*}
+    L_c(f)=\{(x_1,\cdots,x_n)|f(x_1,\cdots,x_n)=c\}
+\end{equation*}
+A\textit{sublevel set} is:
+\begin{equation*}
+    L_c^-(f)=\{(x_1,\cdots,x_n)|f(x_1,\cdots,x_n)\leq c\}
+\end{equation*}
+\end{definition}
+
+\begin{definition}[\textbf{homeomorphic}]
+Two topological spaces X and Y are \textit{homeomorphic} if there exist two continuous bijective maps $f : X \rightarrow
+Y$ and $g : Y \rightarrow X$ such that $f \circ g$ and $g \circ f$ are the identity map of Y and X respectively.
+\end{definition}
+
+\begin{definition}[\textbf{homotopic}]
+Two continuous maps $f_0, f_1 : X ! Y$ are said to be homotopic is there exists a continuous map $H : X \times [0; 1] \rightarrow Y$ such that $ x \in X, H(x, 0) = f_0(x)$ and $H(x, 1) = g(x)$.
+\end{definition}
+
+\begin{definition}[\textbf{homotopy equivalent}]
+Two topological spaces X and Y are said to be \textit{homotopy equivalent} if there exist two maps $f : X \rightarrow Y$ and $g : Y \rightarrow X$ such that $f \circ g$ and $g \circ f$ are homotopic to the identity map of Y and X respectively.
+\end{definition}
+
+\begin{definition}[\textbf{isotopy equivalence}]
+$X \in \mathbb{R^d}$ and $Y \in \mathbb{R^d}$ are said to be \textit{(ambient) isotopic} if there exists a continuous family of homeomorphisms $H:[0,1]\times \mathbb{R}^d$, H continuous, s.t.\\
+1. $\forall t \in[0,1],\ H_t=H(t,\dot):\ \mathbb{R}^d \rightarrow \mathbb{R}^d$is an homeomorphism\\
+2. $H_0$ is the identity map in $R_d$\\
+3. $H_1(X) = Y$\\
+isotopy equivalence is a \textbf{stronger} notion than homeomorphism. Obviously, if X and Y are isotopic, then they are homeomorphic. The converse is generally not true.
+\end{definition}
+% YOUR SOLUTION GOES HERE
+
+
+\section{Definitions about distance}
+\subsection{Hausdroff distance}
+\begin{definition}[\textbf{Hausdroff distance on metric space} pg.3]
+For compact sets $A,B \in M$,Hausdroff distance is defined as:
+\begin{align*}
+    d_H(A,B)& \coloneqq \min\{\delta : \delta >0; \forall a \in A, \exists b \in B, s.t. \rho(a, b) \leq \delta; \forall b \in B, \exists a \in A, s.t. \rho(a, b) \leq \delta\}\\
+    &= \max \{\sup_{b \in B} d(b,A),\sup_{a \in A} d(a,B)\}\\
+    &= \sup_{x \in M}|d(x,A)-d(x,B)|\\
+    &=||d(\cdot,A)-d(\cdot,B)||_{\infty}
+\end{align*}
+\end{definition}
+\begin{definition}[\textbf{Gromov-Haudorff distance between two compact metric spaces} pg.4]
+For two metric space $(M_1,\rho_1), (M_2,\rho 2)$, The \textit{Gromov-Haudorff distance} $d_{GH}(M1, M2)$ between two is the infimum of the real numbers $r \geq 0$ such that there exists a metric space $(M, \rho)$ and two
+compact subspaces $C1, C2 \in M$ that are isometric to M1 and M2 and such that $d_H(C1, C2) \leq r$.
+
+\end{definition}
+\begin{definition}[\textbf{distance-like function} pg.10]
+A function $\phi:\mahtbb{R}^d \rightarrow \mathbb{R}_+$ is \textit{distance-like} if:\\
+\textbf{(i)}: it is \textbf{proper}: the inverse images of compact sets are compact, and\\
+\textbf{(ii)}: $x\rightarrow||x||^2-\phi^2(x)$ is convex.
+\end{definition}
+
+\subsection{Distance to measure}
+\textbf{Drawbacks of distance:} Distance-based methods in TDA may fail completely in the presence of outliers. Adding just a few outliers to a point cloud may dramatically change its distance function and the topology of its
+offsets.
+
+\begin{definition}[\textbf{Distance to measure (DTM)}]
+With probability distribution $P$ in $\mathbb{R}^d$ and a real parameter $0 \leq u \leq 1$, the notion of distance to the support of $P$ is
+\begin{align*}
+    \delta_{P,u}:x \in \mathbb{R}^d \mapsto \inf\{t>0;P(B(x,t))  \geq u\}
+\end{align*}
+where $B()$ is the closed Euclidean ball.\\
+To avoid issues due to discontinuities of the map $P \rightarrow \delta_{P,u}$, define \textit{distance-to-measure function (DTM)}(with parameter $m \in [0; 1]$ and power $r \geq 1$) by
+\begin{align*}
+    d_{P,m,r}(x): x \in \mathbb{R}^d \mapsto \bigg(\frac{1}{m}\int_0^m \delta_{P,u}^r(x)du\bigg)^{\frac{1}{r}}
+\end{align*}
+\end{definition}
+\ \\
+\textbf{Desirable property}
+\begin{theorem}[\textbf{stability with respect to
+perturbations of P in the Wasserstein metric}]
+the map $P \rightarrow d_{P,m,r}$ is $m^\frac{1}{r} - Lipschitz$.\\
+i.e.if $P,\Tilde{P}$ are two probability distributions on $\mathbb{R}^d$, then
+\begin{align*}
+    ||d_{P,m,r}-d_{\Tilde{P},m,r}||_\infty \leq m^{-\frac{1}{r}}w_r(P,\Tilde{P})
+\end{align*}
+where $W_r$ is the Wasserstein distance for the Euclidean metric on $\mathbb{R}^d$, with exponent r.
+\end{theorem}
+
+In practice, usually estimate DTM by \textbf{distance to the
+empirical measure (DTEM)} because the measure P is usually only known through a finite set of observations.
+
+\begin{definition}[\textbf{distance to the
+empirical measure (DTEM)}]
+\begin{align*}
+    d_{P_n,k/n,r}^r(x) = \frac{1}{k}\sum_{j=1}^k ||x -\mathbb{X}_n||_{(j)}^r
+\end{align*}
+where $||x -\mathbb{X}_n||$ is the distance between x and its j-th neighbour in $\{X_1,\cdots,X_n\}$.
+\end{definition}
+
+% YOUR SOLUTION GOES HERE
+\section{Key Data Structures}
+\subsection{Complex}
+\begin{definition}[\textbf{k-dimensional simplex} pg.4]
+Given $\mathbb{X} = \{x_0,\cdots,s_k\}\in \mathbb{R}^d$,of k + 1 affinely independent points, \textit{e k-dimensional simplex} $\sigma=[x_0,\cdots,s_k]$ spanned by X is the \textbf{convex hull} of X.\\
+The points of $\mathbb{X}$ are called the \textbf{vertices} of $\sigma$ and the simplices spanned by the subsets of $\mathbb{X}$ are called the \textbf{faces} of $\sigma$.
+\end{definition}
+\begin{definition}[\textbf{geometric
+simplicial complex}]
+A \textit{geometric simplicial complex} $K$ in $\mathbb{R}^d$ is a collection of simplices such that:\\
+i) any face of a simplex of $K$ is a simplex of $K$,\\
+ii) the intersection of any two simplices of $K$ is either empty or a common face of both.
+\end{definition}
+
+\begin{definition}[\textbf{ abstract simplicial complex}]
+An abstract simplicial complex with vertex set $V$ is a set $\Tilde{K}$ of finite subsets of $V$ such that\\
+(1)the elements of $V$ belongs to $\title{K}$, and\\
+(2)for any $\sigma \in \Tilde{K}$, any subset of $\sigma$ belongs to $\Tilde{K}$.\\
+\\
+The elements of $\Tilde{K}$ are called the \textbf{faces} or the \textbf{simplices} of $\Tilde{K}$.
+\end{definition}
+\ \\
+Two examples of abstract simplicial complex:
+\begin{definition}[\textbf{Čech complex}]
+\textit{Čech complex} $Cech_\alpha(X)$ is defined
+as the set of simplices $[x_0, \cdots, x_k]$ such that the k + 1 closed balls $B(x_i, \alpha)$ have a non-empty intersection.
+\end{definition}
+
+\begin{definition}[\textbf{Vietoris-Rips complex}]
+\textit{Vietoris-Rips complex} is the set of simplices $[x_0, \cdots, x_k]$ such that $d_\mathbb{X}(x_i, x_j) \leq \alpha$ for all $(i, j)$.
+\end{definition}
+
+\subsection{\textbf{Homology}}
+\begin{definition}[\textbf{Hole}]
+$\forall k$, the k-dimensional “holes” are represented by a vector space $H_k$ whose dimension is intuitively the number of independent topological features.\\
+Formally, A hole in a mathematical object is a topological structure which prevents the object from being continuously shrunk to a point.
+\end{definition}
+\begin{example}[\textbf{Homology Groups}]
+\ \\
+The 0-dimensional homology group $H_0$ represents the connected components of the complex\\
+The 1-dimensional homology group $H_1$ represents the 1-dimensional loops\\
+The 2-dimensional homology group $H_2$ represents the 2-dimensional cavities
+\end{example}
+\begin{definition}[\textbf{Chain}]
+Let K be a (finite) simplicial complex and let k be a non negative integer. If $\{\sigma_1,\cdots,\sigma_p\}$ is the set of k-simplices of K, then k-chain is
+\begin{align*}
+    c = \sum_{i=1}^p \varepsilon_i\sigma_i
+\end{align*}
+with $\varepsilon \in \mathbb{Z}_2$, where $\mathbb{Z}_2$ be the field with two elements 0 and 1 such that 1 + 1 = 0.\\
+\\
+Intuitively, the space of k-chains on $K,\ C_k(K)$ is the set whose elements are the formal (finite) sums of k-simplices.
+\end{definition}
+The boundary of a k-simplex $\sigma =[v_0,\cdots,v_k]$ is the (k-1)-chain:
+\begin{align*}
+    \partial_k(\sigma) = \sum_{i=0}^k(-1)^i[v_0,\cdots,\hat{v_i},\cdots,v_k]
+\end{align*}
+where $[v_0,\cdots,\hat{v_i},\cdots,v_k]$ is the (k-1)-simplex spanned by all the vertices except $v_i$.
+\\
+The boundary of a chain is the linear combination of boundaries of the simplices in the chain. The boundary of a k-chain is a (k−1)-chain.\\
+
+The k-simplices form a basis of $C_k(K)$.
+\begin{definition} [\textbf{space of k-boundaries}]
+\begin{align*}
+    B_k(K) = \{c \in C_k(K) : \exists c\ \in C_{k+1}(K), \partial_{k+1}(c') = c\}
+\end{align*}
+\end{definition}
+\begin{definition} [\textbf{space of k-cycles}]
+\begin{align*}
+    Z_k(K) = \{c \in C_k(K) : \partial_{k}=0\}
+\end{align*}
+\end{definition}
+
+\begin{corollary}
+Any k-boundary is a k-cycle,i.e.
+\begin{align*}
+    B_k(K) \subseteq Z_k(K) \subseteq C_k(K)
+\end{align*}
+\end{corollary}
+% YOUR SOLUTION GOES HERE
+
+\section{Persistent homology}
+\subsection{Filtration}
+\begin{definition}[\textbf{Filtration}]
+a \textit{filtration} of a topological space M is a nested family of subspaces $(M_r)_{r \in T}$ , where $T \subseteq R$, s.t. $\forall r, r' \in T$, if $r \leq r'$ then $M_r \subseteq M_{r'}$ and, $M = \bigcup_{r \in T}M_r$.
+\end{definition}
+
+\begin{example}[\textbf{filtration of a simplicial complex K}]
+A \textit{filtration of a simplicial complex K} is a nested family of subcomplexes $(K_r)_{r \in T}$, where $T \subseteq R$, s.t. $\forall r, r' \in T$, if $r \leq r'$ then $K_r \subseteq K_{r'}$ and, $K = \bigcup_{r \in T}K_r$.
+\end{example}
+\begin{example}[\textbf{the sublevel set filtration of f}]
+if $f : \mathbb{M} \rightarrow \mathbb{R}$ is a function, then the family $M_r = f^{-1}((-\infty, r]), r \in \mathbb{R}$ defines a filtration called the \textit{sublevel set filtration} of f.
+\end{example}
+
+\subsection{persistence module}
+\begin{definition}[\textbf{Persistence module}]
+A \textit{persistence module} V over a subset T of the real numbers $\mathbb{R}$ is an indexed family of vector spaces $(V_r |  r \in T)$ and a doubly-indexed family of linear maps $(v_s^r : V_r \rightarrow V_s | r \leq s)$ which satisfy\\
+(1) \textit{the composition law}: $v^s_t \circ v^r_s = v^r_t$, $\forall r \leq s \leq t$, and\\
+(2) $v^r_r$ is the identity map on $V_r$.
+\end{definition}
+
+Geometrically, the persistent module can be represented as \textbf{persistent bar code} and \textbf{persistent diagram}.
+
+\begin{theorem}[\textbf{Decomposition of persistence module}]
+Let V be a persistence module indexed by $T \in R$. If T is a finite set or if all the vector spaces $V_r$ are finite-dimensional, then V is decomposable as a direct sum of interval modules.\\
+\textbf{Persistence landscape} is an alternative representation of persistence diagrams.\\
+\end{theorem}
+
+\textbf{- Metrics for persistent module}\\
+\textbf{bottleneck distance} is the most fundamental metrics to exploit the topological information and topological features inferred from persistent homology.
+
+\begin{definition}[\textbf{matching}]
+A matching between two diagrams $dgm_1$ and $dgm_2$ is a subset $m \subseteq dgm1 \times dgm2$ such that every points in $dgm_1 \setminus \Delta$ and $dgm_2 \setminus \Delta$ appears exactly once in m.
+\end{definition}
+
+\begin{definition}[\textbf{Bottleneck distance}]
+\begin{align*}
+    d_b(dgm_1,dgm_2)=\inf_{matching m}\max_{(p,q)\in m}||p-q||_\infty
+\end{align*}
+\end{definition}
+
+\subsection{Stability of persistence diagrams}
+Stability of persistence diagrams of filtrations built
+on top of data sets can be shown after introducing some definitions.
+
+\begin{definition}[\textbf{homomorphism of degree $\delta$}]
+Let $\mathbb{V},\mahtbb{W}$ be two persistence modules indexed by $\mathbb{R}$. Given $\delta \in \mathbb{R}$, a homomorphism of degree $\delta$ between $\mathbb{V}$ and $\mathbb{W}$ is a collection $\Phi$ of linear maps $\phi_r : V_r \rightarrow W_{r+\delta }$, for all $r \in R$ such that $\forall r \leq s, \phi_s \circ v_s^r = w_{s+\delta}^{r+\delta}\circ \phi_r$.
+\end{definition}
+\begin{definition}[\textbf{$\delta$-interleave}]
+Let $\delta \geq 0$. Two persistence modules $\mathbb{V},\mahtbb{W}$ are $\delta$-interleaved if there exists two homomorphism of degree $\delta$, $\Phi$, from $\mathbb{V}$ to $\mathbb{W}$ and $Psi$, from $\mathbb{W}$ to $\mathbb{V}$ such that $\Psi \Phi = 1_\mathbb{V}^{2\delta}$ and $\Phi \Psi = 1_\mathbb{W}^{2\delta}$.\\
+\end{definition}
+
+\textbf{Main results}
+\begin{theorem}[\textbf{Stability of persistence}]
+Let $\mathbb{V},\mahtbb{W}$ be two q-tame persistence modules. If V and W are $\delta$-interleaved for some $\delta \geq 0$, then
+\begin{align*}
+    d_b(dgm(\mathbb{V}), dgm(\mahtbb{W})) \leq \delta
+\end{align*}
+\end{theorem}
+
+\begin{theorem}
+Let $f,g : M \rightarrow \mathbb{R}$ be two real-valued functions defined on a topological space $M$ that are q-tame, i.e. such that the sublevel sets filtrations of f and g induce q-tame modules at the homology level. Then for any integer k,
+\begin{align*}
+    d_b(dgm_k(f), dmg_k(g)) \leq ||f-g||_\infty = \sup_{x \in M} |f(x) - g(x)|
+\end{align*}
+where $dgm_k(f)$ is the persistence diagram of the persistence module $(H_k(f^{-1}(-\infty,r])) | r\in \mathbb{R})$.
+\end{theorem}
+\begin{theorem}
+Let $\mathbb{X}$ and $\mathbb{Y}$ be two compact metric spaces and let $Filt(\mathbb{X})$ and $Filt(\mathbb{Y})$ be the Vietoris-Rips of Čech filtrations built on top $\mathbb{X}$ and $\mathbb{Y}$. Then
+\begin{align*}
+    d_b(dgm(Filt(\mathbb{X})),dgm(Filt(\mathbb{Y}))) \leq 2 d_{GH}(\mathbb{X,Y})
+\end{align*}
+where $dgm_k(Filt(\mathbb{X}))$ is the persistence diagram of the filtration $Filt(\mathbb{X})$.
+\end{theorem}
+% YOUR SOLUTION GOES HERE
